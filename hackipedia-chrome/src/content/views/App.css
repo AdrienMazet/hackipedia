@@ -3,12 +3,27 @@
   z-index: 2147483647;
 }
 
+#hackipedia-wikipedia-summary,
+#hackipedia-wikipedia-summary * {
+  box-sizing: border-box;
+}
+
+:root {
+  --hackipedia-blue: #2d6df6;
+  --hackipedia-blue-deep: #1750cf;
+  --hackipedia-ink: #172033;
+  --hackipedia-muted: #667089;
+  --hackipedia-line: #dfe6f2;
+  --hackipedia-surface: #ffffff;
+  --hackipedia-surface-soft: #f4f7fc;
+}
+
 .hackipedia-summary-entry {
   position: fixed;
   right: 1.25rem;
   bottom: 2rem;
   z-index: 2147483647;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: ui-rounded, 'Avenir Next', 'Nunito Sans', 'Trebuchet MS', sans-serif;
 }
 
 .hackipedia-summary-button {
@@ -36,7 +51,9 @@
   transition:
     transform 160ms ease,
     box-shadow 160ms ease,
-    background 160ms ease;
+    background 160ms ease,
+    filter 220ms ease,
+    opacity 220ms ease;
 }
 
 .hackipedia-summary-button:hover {
@@ -49,6 +66,50 @@
     0 18px 34px rgb(82 56 21 / 0.14),
     inset 0 1px 0 rgb(255 255 255 / 0.8),
     inset 0 -1px 0 rgb(126 88 28 / 0.1);
+}
+
+.hackipedia-summary-button:disabled {
+  cursor: progress;
+}
+
+.hackipedia-summary-button.is-loading {
+  position: relative;
+  overflow: hidden;
+  filter: saturate(0.9);
+}
+
+.hackipedia-summary-button.is-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      110deg,
+      transparent 0%,
+      rgb(255 255 255 / 0.06) 28%,
+      rgb(255 255 255 / 0.4) 50%,
+      rgb(255 255 255 / 0.08) 72%,
+      transparent 100%
+    );
+  transform: translateX(-120%);
+  animation: hackipedia-fab-shimmer 1.7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.hackipedia-summary-button.is-loading .hackipedia-summary-avatar,
+.hackipedia-summary-button.is-loading .hackipedia-summary-button-copy,
+.hackipedia-summary-button.is-loading .hackipedia-summary-button-icon {
+  animation: hackipedia-fab-breathe 1.9s ease-in-out infinite;
+}
+
+.hackipedia-summary-button.is-loading .hackipedia-summary-avatar {
+  filter: blur(0.6px) saturate(0.9);
+}
+
+.hackipedia-summary-button.is-loading .hackipedia-summary-button-copy,
+.hackipedia-summary-button.is-loading .hackipedia-summary-button-icon {
+  filter: blur(0.45px);
+  opacity: 0.82;
 }
 
 .hackipedia-summary-avatar {
@@ -109,35 +170,34 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-}
-
-.hackipedia-summary-modal-root * {
-  box-sizing: border-box;
+  padding: 1.25rem;
 }
 
 .hackipedia-summary-backdrop {
   position: absolute;
   inset: 0;
   border: 0;
-  background: rgb(9 20 43 / 0.5);
+  background: rgb(12 18 31 / 0.46);
+  backdrop-filter: blur(6px);
   cursor: pointer;
   animation: hackipedia-backdrop-in 260ms ease;
 }
 
 .hackipedia-summary-modal {
   position: relative;
-  width: min(44rem, calc(100vw - 1rem));
+  width: min(28rem, calc(100vw - 1rem));
   max-height: min(90vh, 56rem);
   overflow: auto;
   border-radius: 1.5rem 1.5rem 0 0;
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.75), transparent 4rem),
-    #fff;
-  color: #202122;
+    radial-gradient(circle at top left, rgb(102 160 255 / 0.16), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #f7f9fe 100%);
+  color: var(--hackipedia-ink);
   box-shadow:
     0 -2px 0 rgb(255 255 255 / 0.8),
     0 -18px 50px rgb(15 23 42 / 0.16),
     0 -4px 18px rgb(15 23 42 / 0.08);
+  font-family: ui-rounded, 'Avenir Next', 'Nunito Sans', 'Trebuchet MS', sans-serif;
   animation: hackipedia-sheet-in 320ms cubic-bezier(0.22, 1, 0.36, 1);
   overscroll-behavior: contain;
 }
@@ -153,50 +213,378 @@
   border-radius: 999px;
   background: linear-gradient(180deg, #d7dbe3 0%, #b7bfcb 100%);
   box-shadow: 0 1px 1px rgb(255 255 255 / 0.7);
-  z-index: 1;
+  z-index: 2;
 }
 
-.hackipedia-summary-modal-header {
+.hackipedia-sheet-topbar,
+.hackipedia-sheet-content {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.hackipedia-sheet-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.35rem;
+  padding-bottom: 0.9rem;
+}
+
+.hackipedia-sheet-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+
+.hackipedia-brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 0.8rem;
+  background: linear-gradient(135deg, var(--hackipedia-blue) 0%, #5a92ff 100%);
+  color: #fff;
+  box-shadow: 0 12px 24px rgb(45 109 246 / 0.26);
+}
+
+.hackipedia-sheet-collapse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: var(--hackipedia-surface-soft);
+  color: #65728d;
+}
+
+.hackipedia-sheet-collapse svg,
+.hackipedia-icon-link svg,
+.hackipedia-brand-icon svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+}
+
+.hackipedia-sheet-hero {
+  position: relative;
+  height: 11rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, #c8d7f9 0%, #8ea7dd 100%);
+}
+
+.hackipedia-sheet-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 24%;
+  display: block;
+}
+
+.hackipedia-sheet-cover-fallback,
+.hackipedia-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top, rgb(255 255 255 / 0.3), transparent 30%),
+    linear-gradient(135deg, #375cb4 0%, #1c2c52 100%);
+  color: #fff;
+  font-weight: 800;
+}
+
+.hackipedia-sheet-cover-fallback span {
+  font-size: 3rem;
+}
+
+.hackipedia-sheet-content {
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.hackipedia-identity-block {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.25rem 0.75rem;
-  border-bottom: 1px solid #eaecf0;
 }
 
-.hackipedia-summary-modal-header h2 {
+.hackipedia-avatar-frame {
+  flex: 0 0 auto;
+  width: 4.8rem;
+  height: 4.8rem;
+  margin-top: -2.85rem;
+  padding: 0.22rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 10px 28px rgb(14 23 38 / 0.16);
+}
+
+.hackipedia-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.hackipedia-avatar-fallback span {
+  font-size: 1.35rem;
+}
+
+.hackipedia-identity-copy {
+  min-width: 0;
+  padding-top: 0.35rem;
+}
+
+.hackipedia-identity-copy h2 {
   margin: 0;
-  font-size: 1.4rem;
-  line-height: 1.2;
+  font-size: 2rem;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
 }
 
-.hackipedia-summary-kicker {
-  margin: 0 0 0.35rem;
-  color: #3366cc;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.hackipedia-identity-copy p {
+  margin: 0.3rem 0 0;
+  color: var(--hackipedia-muted);
+  font-size: 1rem;
+  font-weight: 600;
 }
 
-.hackipedia-summary-close {
-  border: 0;
-  background: transparent;
-  color: #54595d;
-  cursor: pointer;
-  font-size: 1.8rem;
-  line-height: 1;
+.hackipedia-quick-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1.2rem;
 }
 
-.hackipedia-summary-body {
-  padding: 1.25rem;
+.hackipedia-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  min-height: 2.15rem;
+  padding: 0.45rem 0.72rem;
+  border: 1px solid var(--hackipedia-line);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.72);
+  color: #39445d;
+  font-size: 0.86rem;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6);
+}
+
+.hackipedia-pill strong {
+  color: #1f2a44;
+  font-weight: 800;
+}
+
+.hackipedia-short-bio {
+  margin: 1.15rem 0 0;
+  color: #29334a;
   font-size: 1rem;
   line-height: 1.6;
 }
 
-.hackipedia-summary-body p {
+.hackipedia-section {
+  margin-top: 1.45rem;
+}
+
+.hackipedia-section h3 {
+  margin: 0 0 0.85rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hackipedia-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.hackipedia-explore-chip {
+  min-width: 0;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid var(--hackipedia-line);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.88);
+  color: #22304c;
+  text-align: left;
+  cursor: default;
+  box-shadow: 0 8px 18px rgb(28 41 73 / 0.05);
+}
+
+.hackipedia-explore-chip small {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--hackipedia-blue-deep);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hackipedia-explore-chip span {
+  display: block;
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.hackipedia-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hackipedia-icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--hackipedia-line);
+  border-radius: 0.9rem;
+  background: rgb(255 255 255 / 0.92);
+  color: #4e5e7b;
+  text-decoration: none;
+  box-shadow: 0 10px 20px rgb(17 24 39 / 0.06);
+}
+
+.hackipedia-summary-key-points ul {
   margin: 0;
+  padding-left: 1.2rem;
+}
+
+.hackipedia-summary-key-points li {
+  margin: 0.52rem 0;
+  color: #3659a8;
+}
+
+.hackipedia-summary-key-points a,
+.hackipedia-summary-key-points span {
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.hackipedia-summary-key-points a:hover {
+  text-decoration: underline;
+}
+
+.hackipedia-engagement-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1.1rem;
+  background: linear-gradient(90deg, #eef4ff 0%, #f8fbff 100%);
+  border: 1px solid #d7e3ff;
+}
+
+.hackipedia-engagement-card p {
+  margin: 0;
+  max-width: 11rem;
+  color: #273451;
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.hackipedia-engagement-button {
+  flex: 0 0 auto;
+  min-width: 7.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--hackipedia-blue) 0%, #3e82ff 100%);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.97rem;
+  font-weight: 800;
+  padding: 0.92rem 1.2rem;
+  box-shadow: 0 14px 26px rgb(45 109 246 / 0.24);
+}
+
+.hackipedia-summary-loading,
+.hackipedia-summary-error {
+  padding: 1.35rem;
+}
+
+.hackipedia-summary-loading p,
+.hackipedia-summary-error p {
+  margin: 1rem 0 0;
+  color: var(--hackipedia-muted);
+  line-height: 1.6;
+}
+
+.hackipedia-summary-error h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.hackipedia-summary-retry {
+  margin-top: 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--hackipedia-blue) 0%, #3e82ff 100%);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.82rem 1.1rem;
+  box-shadow: 0 12px 24px rgb(45 109 246 / 0.24);
+}
+
+.hackipedia-skeleton {
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e7edf8 0%, #f4f7fd 50%, #e7edf8 100%);
+  background-size: 200% 100%;
+  animation: hackipedia-skeleton 1.4s infinite linear;
+}
+
+.hackipedia-skeleton-header {
+  width: 8rem;
+  height: 1.25rem;
+}
+
+.hackipedia-skeleton-hero {
+  width: 100%;
+  height: 10rem;
+  margin-top: 1rem;
+  border-radius: 1.4rem;
+}
+
+.hackipedia-skeleton-line {
+  width: 100%;
+  height: 1rem;
+  margin-top: 1rem;
+}
+
+.hackipedia-skeleton-line.short {
+  width: 74%;
+}
+
+.hackipedia-skeleton-pills {
+  width: 88%;
+  height: 2.1rem;
+  margin-top: 1rem;
+}
+
+@keyframes hackipedia-skeleton {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
 }
 
 @keyframes hackipedia-backdrop-in {
@@ -221,6 +609,29 @@
   }
 }
 
+@keyframes hackipedia-fab-shimmer {
+  from {
+    transform: translateX(-120%);
+  }
+
+  to {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes hackipedia-fab-breathe {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+}
+
 @media (max-width: 640px) {
   .hackipedia-summary-entry {
     right: 0.75rem;
@@ -237,15 +648,38 @@
     height: 3.3rem;
   }
 
+  .hackipedia-summary-modal-root {
+    padding: 0.3rem;
+  }
+
   .hackipedia-summary-modal {
-    width: 100vw;
-    max-height: min(90vh, calc(100vh - 0.5rem));
+    width: 100%;
+    max-height: min(90vh, calc(100vh - 0.35rem));
     border-radius: 1.35rem 1.35rem 0 0;
   }
 
-  .hackipedia-summary-modal-header,
-  .hackipedia-summary-body {
+  .hackipedia-sheet-topbar,
+  .hackipedia-sheet-content {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+
+  .hackipedia-sheet-hero {
+    height: 9.8rem;
+  }
+
+  .hackipedia-identity-copy h2 {
+    font-size: 1.72rem;
+  }
+
+  .hackipedia-engagement-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hackipedia-engagement-card p,
+  .hackipedia-engagement-button {
+    max-width: none;
+    width: 100%;
   }
 }
