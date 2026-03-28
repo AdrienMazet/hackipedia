@@ -6,7 +6,7 @@
 .hackipedia-summary-entry {
   position: fixed;
   right: 1.25rem;
-  bottom: 1.25rem;
+  bottom: 2rem;
   z-index: 2147483647;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
@@ -14,18 +14,18 @@
 .hackipedia-summary-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.78rem;
   border: 1px solid #c9a84c;
-  border-radius: 999px;
+  border-radius: 22px;
   background:
     radial-gradient(circle at top, rgb(255 255 255 / 0.45), transparent 45%),
     linear-gradient(180deg, #fbf7f0 0%, #f5f0e8 58%, #ece2d2 100%);
   color: #362819;
   cursor: pointer;
-  font-size: 0.92rem;
+  font-size: 0.96rem;
   font-weight: 700;
   line-height: 1;
-  padding: 0.35rem 1.1rem 0.35rem 0.35rem;
+  padding: 0.4rem 1.05rem 0.4rem 0.4rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   box-shadow:
@@ -55,8 +55,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 3.7rem;
+  height: 3.7rem;
   overflow: hidden;
   border-radius: 999px;
   background: linear-gradient(135deg, #3f7ae0 0%, #6aa6ff 100%);
@@ -73,13 +73,33 @@
 }
 
 .hackipedia-summary-avatar span {
-  font-size: 1rem;
+  font-size: 1.08rem;
   font-weight: 800;
 }
 
 .hackipedia-summary-button-copy {
   white-space: nowrap;
   text-shadow: 0 1px 0 rgb(255 252 244 / 0.9);
+}
+
+.hackipedia-summary-button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-left: 0.1rem;
+  border-radius: 999px;
+  background: rgb(201 168 76 / 0.14);
+  color: #6f5421;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.55);
+  flex-shrink: 0;
+}
+
+.hackipedia-summary-button-icon svg {
+  width: 1.02rem;
+  height: 1.02rem;
+  display: block;
 }
 
 .hackipedia-summary-modal-root {
@@ -204,17 +224,17 @@
 @media (max-width: 640px) {
   .hackipedia-summary-entry {
     right: 0.75rem;
-    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    bottom: max(1.35rem, calc(env(safe-area-inset-bottom) + 0.5rem));
   }
 
   .hackipedia-summary-button {
-    gap: 0.7rem;
-    padding-right: 0.9rem;
+    gap: 0.64rem;
+    padding-right: 0.82rem;
   }
 
   .hackipedia-summary-avatar {
-    width: 3.1rem;
-    height: 3.1rem;
+    width: 3.3rem;
+    height: 3.3rem;
   }
 
   .hackipedia-summary-modal {
