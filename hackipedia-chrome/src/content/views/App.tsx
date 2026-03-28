@@ -501,6 +501,54 @@ function getInitials(name: string): string {
   return parts.map(part => part[0]?.toUpperCase() ?? '').join('') || 'H'
 }
 
+function getQuickFactIcon(label: string, value: string): string {
+  const source = `${label} ${value}`.toLowerCase()
+
+  if (source.includes('france') || source.includes('franc')) {
+    return '🇫🇷'
+  }
+
+  if (source.includes('siecle') || source.includes('siècle') || source.includes('periode') || source.includes('époque')) {
+    return '🗓️'
+  }
+
+  if (source.includes('milit') || source.includes('guerre') || source.includes('empereur') || source.includes('revolution')) {
+    return '⚡'
+  }
+
+  if (source.includes('art') || source.includes('peint')) {
+    return '🎨'
+  }
+
+  if (source.includes('science') || source.includes('phys')) {
+    return '🔬'
+  }
+
+  return '•'
+}
+
+function getExplorationIcon(label: string, detail: string): string {
+  const source = `${label} ${detail}`.toLowerCase()
+
+  if (source.includes('code') || source.includes('loi')) {
+    return '📜'
+  }
+
+  if (source.includes('ans') || source.includes('jeun') || source.includes('enfance')) {
+    return '🎓'
+  }
+
+  if (source.includes('bataille') || source.includes('waterloo') || source.includes('guerre')) {
+    return '⚔️'
+  }
+
+  if (source.includes('exil') || source.includes('ile') || source.includes('voyage')) {
+    return '🧭'
+  }
+
+  return '✨'
+}
+
 function handleEngagementAction(summary: PageSummaryData) {
   if (summary.engagement.actionType === 'open_wikipedia') {
     window.open(window.location.href, '_blank', 'noopener,noreferrer')
@@ -579,20 +627,9 @@ function LoadingCard() {
   )
 }
 
-function SummaryCard({ summary }: { summary: PageSummaryData }) {
+function SummaryCard({ summary, onClose }: { summary: PageSummaryData, onClose: () => void }) {
   return (
     <>
-      <header className="hackipedia-sheet-topbar">
-        <div className="hackipedia-sheet-brand">
-          <BrandIcon />
-          <span>Curiosity</span>
-        </div>
-
-        <span className="hackipedia-sheet-collapse" aria-hidden="true">
-          <ChevronIcon />
-        </span>
-      </header>
-
       <div className="hackipedia-sheet-hero">
         {summary.mainImageUrl.length > 0 ? (
           <img src={summary.mainImageUrl} alt={summary.fullName} className="hackipedia-sheet-cover" />
@@ -601,6 +638,22 @@ function SummaryCard({ summary }: { summary: PageSummaryData }) {
             <span>{getInitials(summary.fullName)}</span>
           </div>
         )}
+
+        <div className="hackipedia-sheet-hero-scrim" />
+
+        <div className="hackipedia-sheet-brand">
+          <BrandIcon />
+          <span>Hackipedia</span>
+        </div>
+
+        <button
+          type="button"
+          className="hackipedia-sheet-collapse"
+          aria-label="Fermer le resume"
+          onClick={onClose}
+        >
+          <ChevronIcon />
+        </button>
       </div>
 
       <div className="hackipedia-sheet-content">
@@ -624,7 +677,9 @@ function SummaryCard({ summary }: { summary: PageSummaryData }) {
         <section className="hackipedia-quick-facts" aria-label="Metadonnees rapides">
           {summary.quickFacts.map(fact => (
             <span key={fact.label + fact.value} className="hackipedia-pill">
-              <strong>{fact.label}</strong>
+              <span className="hackipedia-pill-icon" aria-hidden="true">
+                {getQuickFactIcon(fact.label, fact.value)}
+              </span>
               <span>{fact.value}</span>
             </span>
           ))}
@@ -637,8 +692,10 @@ function SummaryCard({ summary }: { summary: PageSummaryData }) {
           <div className="hackipedia-chip-grid">
             {summary.explorationItems.map(item => (
               <button key={item.label + item.detail} type="button" className="hackipedia-explore-chip">
-                <small>{item.label}</small>
-                <span>{item.detail}</span>
+                <span className="hackipedia-explore-icon" aria-hidden="true">
+                  {getExplorationIcon(item.label, item.detail)}
+                </span>
+                <span>{item.detail || item.label}</span>
               </button>
             ))}
           </div>
@@ -780,7 +837,12 @@ function App({ pageTitle }: AppProps) {
             aria-labelledby="hackipedia-summary-title"
           >
             {summary.status === 'loading' && <LoadingCard />}
-            {summary.status === 'ready' && summary.content && <SummaryCard summary={summary.content} />}
+            {summary.status === 'ready' && summary.content && (
+              <SummaryCard
+                summary={summary.content}
+                onClose={() => setIsOpen(false)}
+              />
+            )}
             {summary.status === 'error' && (
               <div className="hackipedia-summary-error" aria-live="polite">
                 <h2 id="hackipedia-summary-title">Resume de {summaryHeading}</h2>
