@@ -17,7 +17,15 @@ export default defineManifest({
   permissions: [
     'sidePanel',
     'contentSettings',
+    'storage',
   ],
+  host_permissions: [
+    'https://api.openai.com/*',
+  ],
+  background: {
+    service_worker: 'src/background/main.ts',
+    type: 'module',
+  },
   content_scripts: [{
     js: ['src/content/main.tsx'],
     matches: ['https://*.wikipedia.org/wiki/*'],

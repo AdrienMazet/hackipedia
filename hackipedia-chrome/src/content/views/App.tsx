@@ -1,5 +1,9 @@
 import { useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
+import {
+  GENERATE_PAGE_SUMMARY_MESSAGE,
+  type GeneratePageSummaryResponse,
+} from '@/lib/openai'
 import './App.css'
 
 type AppProps = {
@@ -11,11 +15,55 @@ type SummaryState = {
   content: string
 }
 
-async function fetchPageSummary(): Promise<string> {
-  // TODO: Replace this scaffold with a real backend request.
-  return Promise.resolve(
-    'Résumé généré par le backend à venir. Cette fenêtre modale est un scaffold pour l’intégration future.',
+function getArticleText(): string {
+  const paragraphs = Array.from(
+    document.querySelectorAll('#mw-content-text .mw-parser-output > p, #mw-content-text > p'),
   )
+    .map(node => node.textContent?.trim() ?? '')
+    .filter(Boolean)
+
+  const articleText = paragraphs.join('\n\n').replace(/\s+/g, ' ').trim()
+
+  return articleText.slice(0, 12000)
+}
+
+function requestPageSummary(pageTitle: string): Promise<string> {
+  const pageContent = getArticleText()
+
+  if (!pageContent) {
+    return Promise.reject(new Error('This page does not contain enough text to summarize.'))
+  }
+
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(
+      {
+        type: GENERATE_PAGE_SUMMARY_MESSAGE,
+        payload: {
+          pageTitle,
+          pageUrl: window.location.href,
+          pageContent,
+        },
+      },
+      (response?: GeneratePageSummaryResponse) => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message))
+          return
+        }
+
+        if (!response) {
+          reject(new Error('The extension did not return a summary.'))
+          return
+        }
+
+        if (!response.ok) {
+          reject(new Error(response.error))
+          return
+        }
+
+        resolve(response.summary)
+      },
+    )
+  })
 }
 
 function App({ pageTitle }: AppProps) {
@@ -39,13 +87,15 @@ function App({ pageTitle }: AppProps) {
     setSummary({ status: 'loading', content: '' })
 
     try {
-      const content = await fetchPageSummary()
+      const content = await requestPageSummary(summaryHeading)
       setSummary({ status: 'ready', content })
     }
-    catch {
+    catch (error) {
       setSummary({
         status: 'error',
-        content: 'Le résumé est indisponible pour le moment.',
+        content: error instanceof Error
+          ? error.message
+          : 'Le résumé est indisponible pour le moment.',
       })
     }
   }
