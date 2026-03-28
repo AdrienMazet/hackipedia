@@ -173,6 +173,18 @@ function App({ pageTitle }: AppProps) {
           <span className="hackipedia-summary-button-copy">
             Je te raconte ?
           </span>
+          <span className="hackipedia-summary-button-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20" focusable="false">
+              <path
+                d="M5.25 12.25 10 7.75l4.75 4.5"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+              />
+            </svg>
+          </span>
         </button>
       </section>
 
