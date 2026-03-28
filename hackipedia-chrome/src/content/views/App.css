@@ -1,0 +1,121 @@
+#hackipedia-wikipedia-summary {
+  position: relative;
+  z-index: 2147483647;
+}
+
+.hackipedia-summary-entry {
+  display: flex;
+  justify-content: flex-start;
+  margin: 1rem 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.hackipedia-summary-button {
+  border: 1px solid #3366cc;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #3f7ae0 0%, #3366cc 100%);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.75rem 1.25rem;
+  text-transform: lowercase;
+  box-shadow: 0 10px 30px rgb(51 102 204 / 0.22);
+}
+
+.hackipedia-summary-button:hover {
+  background: linear-gradient(180deg, #4a82e3 0%, #3b6ed1 100%);
+}
+
+.hackipedia-summary-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hackipedia-summary-modal-root * {
+  box-sizing: border-box;
+}
+
+.hackipedia-summary-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(9 20 43 / 0.5);
+  cursor: pointer;
+}
+
+.hackipedia-summary-modal {
+  position: relative;
+  width: min(42rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  border-radius: 1rem;
+  background: #fff;
+  color: #202122;
+  box-shadow: 0 24px 80px rgb(15 23 42 / 0.28);
+}
+
+.hackipedia-summary-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.hackipedia-summary-modal-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.hackipedia-summary-kicker {
+  margin: 0 0 0.35rem;
+  color: #3366cc;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hackipedia-summary-close {
+  border: 0;
+  background: transparent;
+  color: #54595d;
+  cursor: pointer;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.hackipedia-summary-body {
+  padding: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.hackipedia-summary-body p {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .hackipedia-summary-entry {
+    margin: 0.75rem 0;
+  }
+
+  .hackipedia-summary-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hackipedia-summary-modal-header,
+  .hackipedia-summary-body {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
