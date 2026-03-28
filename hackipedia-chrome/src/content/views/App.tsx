@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import './App.css'
 
 type AppProps = {
@@ -57,7 +58,7 @@ function App({ pageTitle }: AppProps) {
         </button>
       </section>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div className="hackipedia-summary-modal-root" role="presentation">
           <button
             type="button"
@@ -101,7 +102,8 @@ function App({ pageTitle }: AppProps) {
               )}
             </div>
           </section>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   )
