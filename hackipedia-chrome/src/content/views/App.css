@@ -1,56 +1,116 @@
-.popup-container {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  margin: 1.25rem;
-  z-index: 100;
-  display: flex;
-  align-items: flex-end;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  user-select: none;
-  line-height: 1em;
+#hackipedia-wikipedia-summary {
+  position: relative;
+  z-index: 2147483647;
 }
 
-.popup-content {
-  background-color: white;
-  color: #1f2937;
-  border-radius: 0.5rem;
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
-  width: max-content;
-  height: min-content;
-  padding: 0.5rem 1rem;
-  margin: auto 0.5rem 0 0;
-  transition: opacity 300ms;
+.hackipedia-summary-entry {
+  display: flex;
+  justify-content: flex-start;
+  margin: 1rem 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.toggle-button {
-  display: flex;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 9999px;
-  box-shadow:
-    0 1px 3px 0 rgb(0 0 0 / 0.1),
-    0 1px 2px -1px rgb(0 0 0 / 0.1);
+.hackipedia-summary-button {
+  border: 1px solid #3366cc;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #3f7ae0 0%, #3366cc 100%);
+  color: #fff;
   cursor: pointer;
-  border: none;
-  background-color: #288cd7;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.75rem 1.25rem;
+  text-transform: lowercase;
+  box-shadow: 0 10px 30px rgb(51 102 204 / 0.22);
 }
 
-.toggle-button:hover {
-  background-color: #1e6aa3;
+.hackipedia-summary-button:hover {
+  background: linear-gradient(180deg, #4a82e3 0%, #3b6ed1 100%);
 }
 
-.button-icon {
-  padding: 4px;
+.hackipedia-summary-modal-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.opacity-100 {
-  opacity: 1;
+.hackipedia-summary-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(9 20 43 / 0.5);
+  cursor: pointer;
 }
 
-.opacity-0 {
-  opacity: 0;
+.hackipedia-summary-modal {
+  position: relative;
+  width: min(42rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  border-radius: 1rem;
+  background: #fff;
+  color: #202122;
+  box-shadow: 0 24px 80px rgb(15 23 42 / 0.28);
+}
+
+.hackipedia-summary-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.hackipedia-summary-modal-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.hackipedia-summary-kicker {
+  margin: 0 0 0.35rem;
+  color: #3366cc;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hackipedia-summary-close {
+  border: 0;
+  background: transparent;
+  color: #54595d;
+  cursor: pointer;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.hackipedia-summary-body {
+  padding: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.hackipedia-summary-body p {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .hackipedia-summary-entry {
+    margin: 0.75rem 0;
+  }
+
+  .hackipedia-summary-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hackipedia-summary-modal-header,
+  .hackipedia-summary-body {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }

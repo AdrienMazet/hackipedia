@@ -20,7 +20,7 @@ export default defineManifest({
   ],
   content_scripts: [{
     js: ['src/content/main.tsx'],
-    matches: ['https://*/*'],
+    matches: ['https://*.wikipedia.org/wiki/*'],
   }],
   side_panel: {
     default_path: 'src/sidepanel/index.html',
