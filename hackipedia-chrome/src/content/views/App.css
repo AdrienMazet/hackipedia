@@ -259,20 +259,20 @@
 }
 
 .hackipedia-sheet-content {
-  padding-bottom: 1.25rem;
+  padding: 1rem 1.25rem 1.25rem;
 }
 
 .hackipedia-identity-block {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 1rem;
-  margin-top: -1.85rem;
 }
 
 .hackipedia-avatar-frame {
   flex: 0 0 auto;
   width: 4.8rem;
   height: 4.8rem;
+  margin-top: -2.85rem;
   padding: 0.22rem;
   border-radius: 50%;
   background: #fff;
@@ -294,7 +294,7 @@
 
 .hackipedia-identity-copy {
   min-width: 0;
-  padding-bottom: 0.35rem;
+  padding-top: 0.35rem;
 }
 
 .hackipedia-identity-copy h2 {
