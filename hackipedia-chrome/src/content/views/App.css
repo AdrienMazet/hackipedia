@@ -359,6 +359,13 @@
   padding-top: 0.45rem;
 }
 
+.hackipedia-identity-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+
 .hackipedia-identity-copy h2 {
   margin: 0;
   font-size: clamp(1.85rem, 4vw, 2.25rem);
@@ -371,6 +378,80 @@
   color: #79839a;
   font-size: 1.02rem;
   font-weight: 500;
+}
+
+.hackipedia-voice-call {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.hackipedia-voice-call-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  min-height: 2.5rem;
+  padding: 0.42rem 0.78rem;
+  border: 1px solid #d9e5ff;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff 0%, #eff4ff 100%);
+  color: #1f4fbf;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 8px 16px rgb(45 109 246 / 0.12);
+}
+
+.hackipedia-voice-call-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.hackipedia-voice-call-button.is-connecting,
+.hackipedia-voice-call-button.is-connected {
+  border-color: #c9a84c;
+  background: linear-gradient(180deg, #fffaf0 0%, #f8edd4 100%);
+  color: #7b5710;
+}
+
+.hackipedia-voice-call-button.is-error {
+  border-color: #f0c6c6;
+  background: linear-gradient(180deg, #fffafa 0%, #fff1f1 100%);
+  color: #b33f3f;
+}
+
+.hackipedia-voice-call-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+}
+
+.hackipedia-voice-call-icon svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.hackipedia-voice-call-status {
+  margin: 0;
+  max-width: 8.5rem;
+  color: #667089;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  text-align: right;
+}
+
+.hackipedia-voice-call-status.is-error {
+  color: #b33f3f;
 }
 
 .hackipedia-quick-facts {
@@ -742,5 +823,21 @@
 
   .hackipedia-engagement-button {
     min-width: 7.8rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .hackipedia-identity-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hackipedia-voice-call {
+    align-items: flex-start;
+  }
+
+  .hackipedia-voice-call-status {
+    max-width: none;
+    text-align: left;
   }
 }

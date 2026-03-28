@@ -21,6 +21,7 @@ export default defineManifest({
   ],
   host_permissions: [
     'https://api.openai.com/*',
+    'https://api.elevenlabs.io/*',
   ],
   background: {
     service_worker: 'src/background/main.ts',

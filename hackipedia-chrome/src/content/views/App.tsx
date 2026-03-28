@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
+  ConversationProvider,
+  useConversationControls,
+  useConversationStatus,
+} from '@elevenlabs/react'
+import {
   OPENAI_API_KEY_STORAGE_KEY,
   PAGE_SUMMARY_JSON_SCHEMA,
   PAGE_SUMMARY_MODEL,
@@ -88,6 +93,8 @@ const LEAD_IMAGE_SELECTORS = [
   '.mw-parser-output > figure img',
   '.thumb img',
 ]
+
+const ELEVENLABS_AGENT_ID = 'agent_0001kmtn91fefa4bht50meknjmq4'
 
 function getTextFromSelectors(selectors: string[]): string[] {
   return Array.from(document.querySelectorAll(selectors.join(', ')))
@@ -627,6 +634,75 @@ function LoadingCard() {
   )
 }
 
+function PhoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 16.2V19a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3 6.2 2 2 0 0 1 5 4h2.8a2 2 0 0 1 2 1.7l.3 2.5a2 2 0 0 1-.6 1.7l-1.5 1.5a16 16 0 0 0 4.8 4.8l1.5-1.5a2 2 0 0 1 1.7-.6l2.5.3a2 2 0 0 1 1.5 1.8Z" />
+    </svg>
+  )
+}
+
+function SummaryVoiceCallButton() {
+  const { startSession, endSession } = useConversationControls()
+  const { status, message } = useConversationStatus()
+
+  const isSupported = typeof window !== 'undefined'
+    && window.isSecureContext
+    && typeof navigator.mediaDevices?.getUserMedia === 'function'
+
+  useEffect(() => () => {
+    endSession()
+  }, [endSession])
+
+  const handleClick = () => {
+    if (status === 'connected' || status === 'connecting') {
+      endSession()
+      return
+    }
+
+    startSession({
+      connectionType: 'webrtc',
+    })
+  }
+
+  const buttonLabel = status === 'connected'
+    ? 'Terminer l appel'
+    : status === 'connecting'
+      ? 'Connexion en cours'
+      : 'Parler avec l agent'
+
+  const helperText = !isSupported
+    ? 'Micro indisponible sur cette page.'
+    : status === 'connected'
+      ? 'Conversation vocale active'
+      : status === 'connecting'
+        ? 'Connexion a ElevenLabs...'
+        : status === 'error'
+          ? (message?.trim() || 'Impossible de lancer l appel.')
+          : 'Ecouter et parler'
+
+  return (
+    <div className="hackipedia-voice-call">
+      <button
+        type="button"
+        className={`hackipedia-voice-call-button is-${status}`}
+        aria-label={buttonLabel}
+        aria-pressed={status === 'connected'}
+        disabled={!isSupported}
+        onClick={handleClick}
+      >
+        <span className="hackipedia-voice-call-icon">
+          <PhoneIcon />
+        </span>
+        <span>{status === 'connected' ? 'En appel' : 'Appeler'}</span>
+      </button>
+      <p className={`hackipedia-voice-call-status${status === 'error' ? ' is-error' : ''}`} aria-live="polite">
+        {helperText}
+      </p>
+    </div>
+  )
+}
+
 function SummaryCard({ summary, onClose }: { summary: PageSummaryData, onClose: () => void }) {
   return (
     <>
@@ -669,7 +745,10 @@ function SummaryCard({ summary, onClose }: { summary: PageSummaryData, onClose: 
           </div>
 
           <div className="hackipedia-identity-copy">
-            <h2 id="hackipedia-summary-title">{summary.fullName}</h2>
+            <div className="hackipedia-identity-heading">
+              <h2 id="hackipedia-summary-title">{summary.fullName}</h2>
+              <SummaryVoiceCallButton />
+            </div>
             <p>{summary.title}</p>
           </div>
         </section>
@@ -838,10 +917,12 @@ function App({ pageTitle }: AppProps) {
           >
             {summary.status === 'loading' && <LoadingCard />}
             {summary.status === 'ready' && summary.content && (
-              <SummaryCard
-                summary={summary.content}
-                onClose={() => setIsOpen(false)}
-              />
+              <ConversationProvider agentId={ELEVENLABS_AGENT_ID}>
+                <SummaryCard
+                  summary={summary.content}
+                  onClose={() => setIsOpen(false)}
+                />
+              </ConversationProvider>
             )}
             {summary.status === 'error' && (
               <div className="hackipedia-summary-error" aria-live="polite">
