@@ -51,7 +51,9 @@
   transition:
     transform 160ms ease,
     box-shadow 160ms ease,
-    background 160ms ease;
+    background 160ms ease,
+    filter 220ms ease,
+    opacity 220ms ease;
 }
 
 .hackipedia-summary-button:hover {
@@ -64,6 +66,50 @@
     0 18px 34px rgb(82 56 21 / 0.14),
     inset 0 1px 0 rgb(255 255 255 / 0.8),
     inset 0 -1px 0 rgb(126 88 28 / 0.1);
+}
+
+.hackipedia-summary-button:disabled {
+  cursor: progress;
+}
+
+.hackipedia-summary-button.is-loading {
+  position: relative;
+  overflow: hidden;
+  filter: saturate(0.9);
+}
+
+.hackipedia-summary-button.is-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      110deg,
+      transparent 0%,
+      rgb(255 255 255 / 0.06) 28%,
+      rgb(255 255 255 / 0.4) 50%,
+      rgb(255 255 255 / 0.08) 72%,
+      transparent 100%
+    );
+  transform: translateX(-120%);
+  animation: hackipedia-fab-shimmer 1.7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.hackipedia-summary-button.is-loading .hackipedia-summary-avatar,
+.hackipedia-summary-button.is-loading .hackipedia-summary-button-copy,
+.hackipedia-summary-button.is-loading .hackipedia-summary-button-icon {
+  animation: hackipedia-fab-breathe 1.9s ease-in-out infinite;
+}
+
+.hackipedia-summary-button.is-loading .hackipedia-summary-avatar {
+  filter: blur(0.6px) saturate(0.9);
+}
+
+.hackipedia-summary-button.is-loading .hackipedia-summary-button-copy,
+.hackipedia-summary-button.is-loading .hackipedia-summary-button-icon {
+  filter: blur(0.45px);
+  opacity: 0.82;
 }
 
 .hackipedia-summary-avatar {
@@ -483,6 +529,19 @@
   font-size: 1.35rem;
 }
 
+.hackipedia-summary-retry {
+  margin-top: 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--hackipedia-blue) 0%, #3e82ff 100%);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.82rem 1.1rem;
+  box-shadow: 0 12px 24px rgb(45 109 246 / 0.24);
+}
+
 .hackipedia-skeleton {
   border-radius: 999px;
   background: linear-gradient(90deg, #e7edf8 0%, #f4f7fd 50%, #e7edf8 100%);
@@ -547,6 +606,29 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes hackipedia-fab-shimmer {
+  from {
+    transform: translateX(-120%);
+  }
+
+  to {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes hackipedia-fab-breathe {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-1px);
   }
 }
 
