@@ -199,14 +199,6 @@ function App({ pageTitle }: AppProps) {
                     Résumé de {summaryHeading}
                   </h2>
                 </div>
-                <button
-                  type="button"
-                  className="hackipedia-summary-close"
-                  aria-label="Fermer"
-                  onClick={() => setIsOpen(false)}
-                >
-                  ×
-                </button>
               </div>
 
               <div className="hackipedia-summary-body">
