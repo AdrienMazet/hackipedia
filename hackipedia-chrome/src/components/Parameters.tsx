@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
-import { OPENAI_API_KEY_STORAGE_KEY } from '@/lib/openai'
+import {
+  ELEVENLABS_API_KEY_STORAGE_KEY,
+  MISTRAL_API_KEY_STORAGE_KEY,
+} from '@/lib/openai'
 
 export default function Parameters() {
-  const [apiKey, setApiKey] = useState('')
+  const [mistralApiKey, setMistralApiKey] = useState('')
+  const [elevenlabsApiKey, setElevenlabsApiKey] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [status, setStatus] = useState('')
@@ -10,7 +14,7 @@ export default function Parameters() {
   useEffect(() => {
     let isMounted = true
 
-    chrome.storage.local.get([OPENAI_API_KEY_STORAGE_KEY], (result) => {
+    chrome.storage.local.get([MISTRAL_API_KEY_STORAGE_KEY, ELEVENLABS_API_KEY_STORAGE_KEY], (result) => {
       if (!isMounted) {
         return
       }
@@ -21,7 +25,8 @@ export default function Parameters() {
         return
       }
 
-      setApiKey(typeof result[OPENAI_API_KEY_STORAGE_KEY] === 'string' ? result[OPENAI_API_KEY_STORAGE_KEY] : '')
+      setMistralApiKey(typeof result[MISTRAL_API_KEY_STORAGE_KEY] === 'string' ? result[MISTRAL_API_KEY_STORAGE_KEY] : '')
+      setElevenlabsApiKey(typeof result[ELEVENLABS_API_KEY_STORAGE_KEY] === 'string' ? result[ELEVENLABS_API_KEY_STORAGE_KEY] : '')
       setIsLoading(false)
     })
 
@@ -30,13 +35,16 @@ export default function Parameters() {
     }
   }, [])
 
-  const saveApiKey = () => {
+  const saveApiKeys = () => {
     setIsSaving(true)
     setStatus('')
 
-    chrome.storage.local.set({ [OPENAI_API_KEY_STORAGE_KEY]: apiKey.trim() }, () => {
+    chrome.storage.local.set({
+      [MISTRAL_API_KEY_STORAGE_KEY]: mistralApiKey.trim(),
+      [ELEVENLABS_API_KEY_STORAGE_KEY]: elevenlabsApiKey.trim(),
+    }, () => {
       if (chrome.runtime.lastError) {
-        setStatus('Unable to save the API key.')
+        setStatus('Unable to save the API keys.')
         setIsSaving(false)
         return
       }
@@ -51,21 +59,37 @@ export default function Parameters() {
       <div className="parameters-header">
         <p className="parameters-kicker">Hackipedia</p>
         <h1 id="parameters-title">Parameters</h1>
-        <p className="parameters-copy">Configure the OpenAI API key used by the extension.</p>
+        <p className="parameters-copy">Configure the Mistral and ElevenLabs API keys used by the extension.</p>
       </div>
 
-      <label className="parameters-field" htmlFor="openai-api-key">
-        <span>OpenAI API key</span>
+      <label className="parameters-field" htmlFor="mistral-api-key">
+        <span>Mistral API key</span>
         <input
-          id="openai-api-key"
+          id="mistral-api-key"
           type="password"
           autoComplete="off"
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck={false}
-          placeholder="sk-..."
-          value={apiKey}
-          onChange={event => setApiKey(event.target.value)}
+          placeholder="..."
+          value={mistralApiKey}
+          onChange={event => setMistralApiKey(event.target.value)}
+          disabled={isLoading || isSaving}
+        />
+      </label>
+
+      <label className="parameters-field" htmlFor="elevenlabs-api-key">
+        <span>ElevenLabs API key</span>
+        <input
+          id="elevenlabs-api-key"
+          type="password"
+          autoComplete="off"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          placeholder="sk_..."
+          value={elevenlabsApiKey}
+          onChange={event => setElevenlabsApiKey(event.target.value)}
           disabled={isLoading || isSaving}
         />
       </label>
@@ -74,7 +98,7 @@ export default function Parameters() {
         <button
           type="button"
           className="parameters-save"
-          onClick={saveApiKey}
+          onClick={saveApiKeys}
           disabled={isLoading || isSaving}
         >
           {isSaving ? 'Saving...' : 'Save'}

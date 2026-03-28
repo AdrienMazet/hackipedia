@@ -20,7 +20,8 @@ export default defineManifest({
     'storage',
   ],
   host_permissions: [
-    'https://api.openai.com/*',
+    'https://api.mistral.ai/*',
+    'https://api.elevenlabs.io/*',
   ],
   background: {
     service_worker: 'src/background/main.ts',
