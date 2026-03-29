@@ -1286,7 +1286,10 @@ function AppContent({ pageTitle }: AppProps) {
 
       {sheetView &&
         createPortal(
-          <div className="hackipedia-summary-modal-root" role="presentation">
+          <div
+            className={`hackipedia-summary-modal-root${sheetView === "travel" ? " hackipedia-summary-modal-root-fullscreen" : ""}`}
+            role="presentation"
+          >
             <button
               type="button"
               className="hackipedia-summary-backdrop"
