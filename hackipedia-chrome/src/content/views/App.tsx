@@ -667,7 +667,7 @@ function AppContent({ pageTitle }: AppProps) {
   const wasManualHangup = useRef(false);
   const reconnectAttempts = useRef(0);
 
-  const { startSession, endSession, status, message, isSpeaking } =
+  const { startSession, endSession, status, isSpeaking } =
     useConversation({
       onConnect: (metadata: any) => {
         console.info(
@@ -1044,7 +1044,7 @@ function AppContent({ pageTitle }: AppProps) {
         aria-label="Résumé Hackipedia"
       >
         <div
-          className={`hackipedia-summary-button${isSpeaking ? " is-exploring" : ""}`}
+          className={`hackipedia-summary-button${isCallOngoing ? " is-exploring" : ""}`}
         >
           <button
             type="button"
@@ -1064,7 +1064,7 @@ function AppContent({ pageTitle }: AppProps) {
                 {displayName}
               </span>
               <span className="hackipedia-summary-button-status">
-                {isSpeaking ? (
+                {isCallOngoing ? (
                   <>
                     <span
                       className="hackipedia-summary-button-status-phone"
@@ -1080,18 +1080,6 @@ function AppContent({ pageTitle }: AppProps) {
                       speed={28}
                       fadeWidth={16}
                     />
-                  </>
-                ) : isCallConnecting ? (
-                  <>
-                    <span
-                      className="hackipedia-summary-button-status-phone"
-                      aria-hidden="true"
-                    >
-                      <Phone />
-                    </span>
-                    <span className="hackipedia-summary-button-status-text">
-                      Connexion...
-                    </span>
                   </>
                 ) : callError ? (
                   <span className="hackipedia-summary-button-status-text">
