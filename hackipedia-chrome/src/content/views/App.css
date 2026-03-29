@@ -839,3 +839,13 @@
     padding-bottom: 0.35rem;
   }
 }
+
+.hackipedia-sitemap-button-slot {
+  display: contents;
+}
+
+.hackipedia-sitemap-button-icon {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+}

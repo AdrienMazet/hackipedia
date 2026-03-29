@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ConversationProvider, useConversation } from "@elevenlabs/react";
 import { BookOpen, Download, Phone, PhoneOff } from "lucide-react";
+import mapIcon from "@/assets/map.svg";
 import {
   ELEVENLABS_API_KEY_STORAGE_KEY,
   MISTRAL_API_KEY_STORAGE_KEY,
@@ -655,6 +656,9 @@ function QuizSheet({
 
 function AppContent({ pageTitle }: AppProps) {
   const [sheetView, setSheetView] = useState<SheetView | null>(null);
+  const [mobileHeaderSlot, setMobileHeaderSlot] = useState<HTMLDivElement | null>(
+    null,
+  );
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizScore, setQuizScore] = useState(0);
   const [isQuizComplete, setIsQuizComplete] = useState(false);
@@ -755,6 +759,32 @@ function AppContent({ pageTitle }: AppProps) {
       endSession();
     };
   }, [endSession]);
+
+  useEffect(() => {
+    const searchButton = document.querySelector("#searchIcon");
+
+    if (!(searchButton instanceof HTMLButtonElement)) {
+      setMobileHeaderSlot(null);
+      return;
+    }
+
+    const searchButtonParent = searchButton.parentElement;
+
+    if (!(searchButtonParent instanceof HTMLElement)) {
+      setMobileHeaderSlot(null);
+      return;
+    }
+
+    const slot = document.createElement("div");
+    slot.className = "hackipedia-sitemap-button-slot";
+    searchButtonParent.insertBefore(slot, searchButton);
+    setMobileHeaderSlot(slot);
+
+    return () => {
+      slot.remove();
+      setMobileHeaderSlot(null);
+    };
+  }, []);
 
   useEffect(() => {
     setSummaryStatus("loading");
@@ -1114,6 +1144,29 @@ function AppContent({ pageTitle }: AppProps) {
           </button>
         </div>
       </section>
+
+      {mobileHeaderSlot &&
+        createPortal(
+          <button
+            type="button"
+            id="hackipediaSitemapButton"
+            className="cdx-button cdx-button--size-large cdx-button--icon-only cdx-button--weight-quiet skin-minerva-search-trigger hackipedia-sitemap-button"
+            aria-label="Sitemap"
+            title="Sitemap"
+            onClick={() => {
+              console.info("[Hackipedia] Sitemap button clicked.");
+            }}
+          >
+            <img
+              src={mapIcon}
+              alt=""
+              className="hackipedia-sitemap-button-icon"
+              aria-hidden="true"
+            />
+            <span>Sitemap</span>
+          </button>,
+          mobileHeaderSlot,
+        )}
 
       {sheetView &&
         createPortal(
