@@ -594,8 +594,6 @@ function RecapSheet({
 
 
 function TravelMapSheet({
-  pageTitle,
-  summary,
   status,
   avatarUrl,
   onContinue,
@@ -606,45 +604,51 @@ function TravelMapSheet({
   avatarUrl: string | null;
   onContinue: () => void;
 }) {
+  console.log(avatarUrl);
   const travelSteps =
-    status === "ready" && summary
-      ? [
+    // status === "ready" && summary
+    //   ? [
+    //       {
+    //         label: summary.fullName,
+    //         detail:
+    //           summary.title ||
+    //           summary.keyTakeaways[0] ||
+    //           "Debut de l'exploration",
+    //       },
+    //       ...summary.relatedLinks.map((item) => ({
+    //         label: item.label,
+    //         detail: item.detail,
+    //       })),
+    //     ]
+    //   : 
+    [
           {
-            label: summary.fullName,
-            detail:
-              summary.title ||
-              summary.keyTakeaways[0] ||
-              "Debut de l'exploration",
-          },
-          ...summary.relatedLinks.map((item) => ({
-            label: item.label,
-            detail: item.detail,
-          })),
-        ]
-      : [
-          {
-            label: pageTitle,
-            detail: "Exploration en cours...",
-          },
-          {
-            label: "Lien associe",
-            detail: "Chargement des connexions...",
+            label: "Albert Einstein",
+            detail: "Physicien et prix Nobel",
+            avatarUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Albert_Einstein_Head_cleaned.jpg/120px-Albert_Einstein_Head_cleaned.jpg",
           },
           {
-            label: "Lien associe",
-            detail: "Chargement des connexions...",
+            label: "Pierre Curie",
+            detail: "Physicien et prix Nobel",
+            avatarUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Pierre_Curie_by_Dujardin_c1906.jpg/500px-Pierre_Curie_by_Dujardin_c1906.jpg",
           },
           {
-            label: "Lien associe",
-            detail: "Chargement des connexions...",
+            label: "Irène Joliot-Curie",
+            detail: "Chimiste, Physicienne et prix Nobel",
+            avatarUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Frederic_and_Irene_Joliot-Curie.jpg/250px-Frederic_and_Irene_Joliot-Curie.jpg",
+          },
+          {
+            label: "Marie Curie",
+            detail: "Chimiste et physicienne, prix Nobel",
+            avatarUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Marie_Curie_c1920.jpg/500px-Marie_Curie_c1920.jpg",
           },
         ];
 
   const linkCountLabel = `${travelSteps.length} liens`;
   const subtitle =
     status === "ready"
-      ? `Tu as explore ${travelSteps.length} sujets differents en 30min`
-      : "Tu explores des sujets relies en ce moment";
+      ? `Tu as exploré ${travelSteps.length} sujets différents en 18min`
+      : "Tu explores des sujets reliés en ce moment";
 
   return (
     <div className="hackipedia-travel-sheet">
@@ -679,7 +683,7 @@ function TravelMapSheet({
                 <span className="hackipedia-travel-avatar-wrap">
                   <span className="hackipedia-travel-step-index">{index + 1}</span>
                   <span className="hackipedia-travel-avatar">
-                    {avatarUrl ? <img src={avatarUrl} alt="" /> : <span>{getInitials(step.label)}</span>}
+                    {step.avatarUrl ? <img src={step.avatarUrl} alt="" /> : <span>{getInitials(step.label)}</span>}
                   </span>
                 </span>
 
