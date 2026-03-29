@@ -777,7 +777,7 @@ function AppContent({ pageTitle }: AppProps) {
 
     const slot = document.createElement("div");
     slot.className = "hackipedia-sitemap-button-slot";
-    searchButtonParent.insertBefore(slot, searchButton);
+    searchButtonParent.insertBefore(slot, searchButton.nextSibling);
     setMobileHeaderSlot(slot);
 
     return () => {
