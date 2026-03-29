@@ -761,9 +761,9 @@ function AppContent({ pageTitle }: AppProps) {
   }, [endSession]);
 
   useEffect(() => {
-    const searchButton = document.querySelector("#searchIcon");
+    const searchButton = document.querySelector(".minerva-search-form");
 
-    if (!(searchButton instanceof HTMLButtonElement)) {
+    if (!(searchButton instanceof HTMLElement)) {
       setMobileHeaderSlot(null);
       return;
     }
@@ -1163,7 +1163,6 @@ function AppContent({ pageTitle }: AppProps) {
               className="hackipedia-sitemap-button-icon"
               aria-hidden="true"
             />
-            <span>Sitemap</span>
           </button>,
           mobileHeaderSlot,
         )}
