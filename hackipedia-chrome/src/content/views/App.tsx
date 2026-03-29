@@ -16,7 +16,7 @@ type AppProps = {
   pageTitle: string;
 };
 
-type SheetView = "call" | "recap" | "quiz";
+type SheetView = "call" | "recap" | "quiz" | "travel";
 type SummaryStatus = "idle" | "loading" | "ready" | "error";
 const ELEVENLABS_AGENT_ID = "agent_0001kmtn91fefa4bht50meknjmq4";
 
@@ -592,6 +592,122 @@ function RecapSheet({
   );
 }
 
+
+function TravelMapSheet({
+  pageTitle,
+  summary,
+  status,
+  avatarUrl,
+  onContinue,
+}: {
+  pageTitle: string;
+  summary: PageSummaryData | null;
+  status: SummaryStatus;
+  avatarUrl: string | null;
+  onContinue: () => void;
+}) {
+  const travelSteps =
+    status === "ready" && summary
+      ? [
+          {
+            label: summary.fullName,
+            detail:
+              summary.title ||
+              summary.keyTakeaways[0] ||
+              "Debut de l'exploration",
+          },
+          ...summary.relatedLinks.map((item) => ({
+            label: item.label,
+            detail: item.detail,
+          })),
+        ]
+      : [
+          {
+            label: pageTitle,
+            detail: "Exploration en cours...",
+          },
+          {
+            label: "Lien associe",
+            detail: "Chargement des connexions...",
+          },
+          {
+            label: "Lien associe",
+            detail: "Chargement des connexions...",
+          },
+          {
+            label: "Lien associe",
+            detail: "Chargement des connexions...",
+          },
+        ];
+
+  const linkCountLabel = `${travelSteps.length} liens`;
+  const subtitle =
+    status === "ready"
+      ? `Tu as explore ${travelSteps.length} sujets differents en 30min`
+      : "Tu explores des sujets relies en ce moment";
+
+  return (
+    <div className="hackipedia-travel-sheet">
+      <div className="hackipedia-travel-card">
+        <header className="hackipedia-travel-header">
+          <div className="hackipedia-travel-title-row">
+            <span className="hackipedia-travel-title-icon" aria-hidden="true">
+              <img src={mapIcon} alt="" />
+            </span>
+            <h2 id="hackipedia-summary-title">Mon voyage</h2>
+          </div>
+          <p className="hackipedia-travel-subtitle">{subtitle}</p>
+          <span className="hackipedia-travel-badge">{linkCountLabel}</span>
+        </header>
+
+        <div className="hackipedia-travel-timeline" aria-label="Parcours explore">
+          {travelSteps.map((step, index) => (
+            <article className="hackipedia-travel-stop" key={`${step.label}-${index}`}>
+              <div className="hackipedia-travel-rail" aria-hidden="true">
+                <span className="hackipedia-travel-node" />
+                {index === travelSteps.length - 1 ? (
+                  <span className="hackipedia-travel-arrow">
+                    <span />
+                    <span />
+                  </span>
+                ) : (
+                  <span className="hackipedia-travel-segment" />
+                )}
+              </div>
+
+              <div className="hackipedia-travel-stop-body">
+                <span className="hackipedia-travel-avatar-wrap">
+                  <span className="hackipedia-travel-step-index">{index + 1}</span>
+                  <span className="hackipedia-travel-avatar">
+                    {avatarUrl ? <img src={avatarUrl} alt="" /> : <span>{getInitials(step.label)}</span>}
+                  </span>
+                </span>
+
+                <div className="hackipedia-travel-copy">
+                  <h3>{step.label}</h3>
+                  <p>+ {step.detail}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <p className="hackipedia-travel-after">Et apres ?</p>
+
+        <div className="hackipedia-travel-actions">
+          <button
+            type="button"
+            className="hackipedia-travel-primary"
+            onClick={onContinue}
+          >
+            Poursuivre l'aventure
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function QuizSheet({
   summary,
   quizIndex,
@@ -1151,10 +1267,11 @@ function AppContent({ pageTitle }: AppProps) {
             type="button"
             id="hackipediaSitemapButton"
             className="cdx-button cdx-button--size-large cdx-button--icon-only cdx-button--weight-quiet skin-minerva-search-trigger hackipedia-sitemap-button"
-            aria-label="Sitemap"
-            title="Sitemap"
+            aria-label="Mon voyage"
+            title="Mon voyage"
             onClick={() => {
-              console.info("[Hackipedia] Sitemap button clicked.");
+              console.info("[Hackipedia] Travel map button clicked.");
+              setSheetView("travel");
             }}
           >
             <img
@@ -1178,7 +1295,13 @@ function AppContent({ pageTitle }: AppProps) {
             />
 
             <section
-              className={`hackipedia-summary-modal${sheetView === "call" ? " hackipedia-summary-modal-compact" : " hackipedia-summary-modal-recap"}`}
+              className={`hackipedia-summary-modal${
+                sheetView === "call"
+                  ? " hackipedia-summary-modal-compact"
+                  : sheetView === "travel"
+                    ? " hackipedia-summary-modal-fullscreen"
+                    : " hackipedia-summary-modal-recap"
+              }`}
               role="dialog"
               aria-modal="true"
               aria-labelledby="hackipedia-summary-title"
@@ -1200,6 +1323,14 @@ function AppContent({ pageTitle }: AppProps) {
                   status={summaryStatus}
                   error={summaryError}
                   onOpenQuiz={openQuizSheet}
+                />
+              ) : sheetView === "travel" ? (
+                <TravelMapSheet
+                  pageTitle={displayName}
+                  summary={summaryData}
+                  status={summaryStatus}
+                  avatarUrl={summaryData?.avatarImageUrl || displayAvatarUrl}
+                  onContinue={closeSheet}
                 />
               ) : (
                 <QuizSheet
