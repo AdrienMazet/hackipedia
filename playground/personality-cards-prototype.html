@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hackipedia Personality Cards Prototype</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page-bg: #f1ede5;
+      --ink: #1e1b18;
+      --muted: #655d53;
+      --card-bg: rgba(255, 252, 247, 0.84);
+      --panel-shadow: 0 40px 120px rgba(38, 26, 11, 0.22);
+      --wiki-blue: #3366cc;
+      --chat-bg: rgba(255, 250, 242, 0.86);
+      --chip-bg: rgba(255, 255, 255, 0.72);
+      --accent: #c1973b;
+      --accent-soft: rgba(193, 151, 59, 0.18);
+      --title-font: "Georgia", "Times New Roman", serif;
+      --body-font: "Segoe UI", system-ui, sans-serif;
+      --motif-a: "𓂀";
+      --motif-b: "𓆣";
+      --motif-c: "𓎼";
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--body-font);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.8), transparent 28%),
+        linear-gradient(180deg, #f7f4ee 0%, var(--page-bg) 100%);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .prototype {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .wiki-shell {
+      position: relative;
+      padding-bottom: 120px;
+    }
+
+    .wiki-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: rgba(251, 249, 244, 0.9);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(51, 102, 204, 0.12);
+    }
+
+    .wiki-wordmark {
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #202122;
+    }
+
+    .wiki-wordmark span {
+      color: var(--wiki-blue);
+    }
+
+    .wiki-actions {
+      display: flex;
+      gap: 10px;
+      color: #54595d;
+      font-size: 14px;
+    }
+
+    .wiki-page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 290px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .article {
+      padding: 34px 36px 64px;
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(84, 89, 93, 0.12);
+      box-shadow: 0 16px 60px rgba(73, 51, 20, 0.07);
+      backdrop-filter: blur(8px);
+    }
+
+    .article h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2.6rem, 4vw, 4.2rem);
+      line-height: 0.95;
+      font-weight: 500;
+      font-family: Georgia, serif;
+    }
+
+    .article .dek {
+      margin: 0 0 22px;
+      max-width: 66ch;
+      font-size: 1.08rem;
+      line-height: 1.65;
+      color: #3a3a36;
+    }
+
+    .article .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 26px;
+    }
+
+    .meta-pill {
+      padding: 8px 12px;
+      border: 1px solid rgba(84, 89, 93, 0.16);
+      background: rgba(255, 255, 255, 0.86);
+      color: #54595d;
+      border-radius: 999px;
+      font-size: 0.88rem;
+    }
+
+    .article p {
+      margin: 0 0 16px;
+      font-size: 1rem;
+      line-height: 1.78;
+      color: #202122;
+    }
+
+    .infobox {
+      position: sticky;
+      top: 78px;
+      padding: 18px;
+      border: 1px solid rgba(84, 89, 93, 0.14);
+      background: rgba(252, 250, 246, 0.88);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 48px rgba(64, 45, 21, 0.08);
+    }
+
+    .infobox h2 {
+      margin: 0 0 14px;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #54595d;
+    }
+
+    .infobox img {
+      width: 100%;
+      display: block;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      object-fit: cover;
+      max-height: 320px;
+    }
+
+    .infobox dl {
+      margin: 0;
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 10px 12px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .infobox dt {
+      color: #54595d;
+      font-weight: 700;
+    }
+
+    .assistant-bubble {
+      position: fixed;
+      right: 26px;
+      top: 88px;
+      z-index: 20;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px 12px 14px;
+      border: 0;
+      border-radius: 999px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.94), rgba(255,250,241,0.84)),
+        linear-gradient(135deg, #ead7a0, #b7883f);
+      box-shadow: 0 18px 44px rgba(52, 34, 11, 0.22);
+      color: #231b11;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .assistant-bubble:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 50px rgba(52, 34, 11, 0.24);
+    }
+
+    .assistant-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #2e2210, #8b6a2a);
+      color: #f9f0d2;
+      font-size: 18px;
+    }
+
+    .assistant-bubble strong {
+      display: block;
+      font-size: 0.95rem;
+      line-height: 1.1;
+    }
+
+    .assistant-bubble span {
+      display: block;
+      font-size: 0.78rem;
+      color: rgba(35, 27, 17, 0.72);
+    }
+
+    .assistant-panel {
+      position: fixed;
+      inset: 0;
+      z-index: 25;
+      display: none;
+      place-items: end end;
+      padding: 28px;
+      background: rgba(30, 25, 18, 0.18);
+      backdrop-filter: blur(10px);
+    }
+
+    .assistant-panel.is-open {
+      display: grid;
+    }
+
+    .deck {
+      width: min(1180px, calc(100vw - 28px));
+      max-height: calc(100vh - 56px);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.5)),
+        linear-gradient(130deg, rgba(247, 239, 224, 0.85), rgba(238, 230, 218, 0.88));
+      border: 1px solid rgba(255,255,255,0.36);
+      box-shadow: var(--panel-shadow);
+    }
+
+    .navigator {
+      padding: 26px 20px 20px;
+      border-right: 1px solid rgba(41, 30, 17, 0.08);
+      background:
+        linear-gradient(180deg, rgba(250, 247, 241, 0.95), rgba(243, 236, 225, 0.9));
+    }
+
+    .navigator h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .navigator p {
+      margin: 8px 0 22px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+
+    .person-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .person-option {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(56, 43, 24, 0.08);
+      background: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .person-option:hover,
+    .person-option.is-active {
+      transform: translateX(3px);
+      background: rgba(255,255,255,0.92);
+      border-color: rgba(114, 83, 35, 0.24);
+    }
+
+    .person-option img {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      object-fit: cover;
+    }
+
+    .person-option strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    .person-option span {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .card-stage {
+      position: relative;
+      overflow: auto;
+      padding: 24px;
+    }
+
+    .person-card {
+      position: relative;
+      min-height: 100%;
+      padding: 26px;
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0.28)),
+        radial-gradient(circle at top right, rgba(255,255,255,0.5), transparent 26%),
+        var(--theme-bg);
+      border: 1px solid rgba(255,255,255,0.22);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .person-card::before,
+    .person-card::after {
+      position: absolute;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+      color: var(--accent);
+      font-family: var(--title-font);
+    }
+
+    .person-card::before {
+      content: var(--motif-a) " " var(--motif-b) " " var(--motif-c);
+      top: 18px;
+      right: 28px;
+      letter-spacing: 0.28em;
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+    }
+
+    .person-card::after {
+      content: var(--ornament);
+      right: -8px;
+      bottom: 12px;
+      font-size: clamp(8rem, 14vw, 13rem);
+      line-height: 0.8;
+      opacity: 0.08;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card-top {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .portrait-wrap {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      min-height: 380px;
+      box-shadow: 0 20px 48px rgba(35, 25, 11, 0.18);
+      background: rgba(24, 18, 11, 0.18);
+    }
+
+    .portrait-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.95) contrast(1.04);
+    }
+
+    .portrait-caption {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(17, 14, 11, 0.46);
+      color: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
+    .hero {
+      display: grid;
+      gap: 16px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: rgba(27, 21, 15, 0.84);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero h3 {
+      margin: 0;
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 0.92;
+      font-weight: 500;
+      font-family: var(--title-font);
+      max-width: 12ch;
+    }
+
+    .hero .summary {
+      max-width: 62ch;
+      font-size: 1.05rem;
+      line-height: 1.72;
+      color: rgba(30, 27, 24, 0.88);
+    }
+
+    .facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .fact {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.56);
+      border: 1px solid rgba(53, 41, 24, 0.08);
+      min-width: 132px;
+    }
+
+    .fact strong {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(71, 61, 48, 0.7);
+      margin-bottom: 4px;
+    }
+
+    .fact span {
+      display: block;
+      font-size: 0.96rem;
+      line-height: 1.35;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .sections {
+      display: grid;
+      gap: 16px;
+    }
+
+    .section-card,
+    .chat-panel {
+      border-radius: 20px;
+      background: var(--card-bg);
+      border: 1px solid rgba(58, 47, 34, 0.1);
+      box-shadow: 0 10px 30px rgba(52, 38, 20, 0.06);
+      backdrop-filter: blur(10px);
+    }
+
+    .section-card {
+      padding: 18px 18px 16px;
+    }
+
+    .section-card h4,
+    .chat-panel h4 {
+      margin: 0 0 12px;
+      font-size: 0.88rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(79, 67, 52, 0.72);
+    }
+
+    .section-card p {
+      margin: 0;
+      line-height: 1.72;
+      color: rgba(31, 28, 25, 0.9);
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mini-list li {
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.54);
+      border: 1px solid rgba(55, 42, 22, 0.06);
+      line-height: 1.55;
+    }
+
+    .mini-list strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.88rem;
+    }
+
+    .chat-panel {
+      display: grid;
+      grid-template-rows: auto auto minmax(170px, 1fr) auto;
+      min-height: 100%;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,250,244,0.74)),
+        var(--chat-bg);
+    }
+
+    .chat-panel .header {
+      padding: 18px 18px 10px;
+    }
+
+    .chat-panel .header p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
+    .themes {
+      padding: 0 18px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .theme-chip {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 12px;
+      background: var(--chip-bg);
+      color: var(--ink);
+      cursor: pointer;
+      transition: transform 150ms ease, background 150ms ease;
+    }
+
+    .theme-chip:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.95);
+    }
+
+    .chat-log {
+      padding: 0 18px 18px;
+      overflow: auto;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .message {
+      width: fit-content;
+      max-width: 92%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      line-height: 1.55;
+      font-size: 0.93rem;
+      box-shadow: 0 8px 20px rgba(33, 24, 13, 0.05);
+    }
+
+    .message.assistant {
+      background: rgba(255,255,255,0.86);
+      border: 1px solid rgba(46, 37, 23, 0.06);
+    }
+
+    .message.user {
+      margin-left: auto;
+      background: rgba(41, 30, 17, 0.9);
+      color: rgba(255,255,255,0.95);
+    }
+
+    .composer {
+      padding: 14px 18px 18px;
+      border-top: 1px solid rgba(48, 35, 19, 0.08);
+      background: rgba(255,255,255,0.44);
+    }
+
+    .composer label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(79, 67, 52, 0.74);
+    }
+
+    .composer-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .composer input {
+      min-width: 0;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(52, 41, 25, 0.14);
+      background: rgba(255,255,255,0.9);
+      outline: none;
+    }
+
+    .composer input:focus {
+      border-color: rgba(105, 79, 33, 0.5);
+      box-shadow: 0 0 0 4px rgba(193, 151, 59, 0.14);
+    }
+
+    .composer button,
+    .close-button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #2b2114, #937138);
+      color: #fbf5ea;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(49, 34, 13, 0.14);
+    }
+
+    .close-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 2;
+      padding: 10px 14px;
+      background: rgba(34, 26, 18, 0.74);
+      backdrop-filter: blur(10px);
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: rgba(79, 67, 52, 0.8);
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+    }
+
+    .legend .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    .theme-cleopatra {
+      --accent: #c8a24f;
+      --accent-soft: rgba(200, 162, 79, 0.16);
+      --title-font: "Palatino Linotype", "Book Antiqua", serif;
+      --theme-bg:
+        linear-gradient(135deg, rgba(157, 119, 37, 0.1), transparent 34%),
+        linear-gradient(180deg, rgba(244, 233, 201, 0.72), rgba(229, 214, 175, 0.44)),
+        linear-gradient(120deg, rgba(63, 83, 84, 0.18), rgba(244, 240, 229, 0.2));
+      --ornament: "𓃭";
+      --motif-a: "𓂀";
+      --motif-b: "𓆣";
+      --motif-c: "𓎼";
+      --chip-bg: rgba(245, 237, 214, 0.86);
+      --chat-bg: rgba(252, 247, 234, 0.84);
+      --card-bg: rgba(255, 250, 239, 0.7);
+    }
+
+    .theme-columbus {
+      --accent: #7b5536;
+      --accent-soft: rgba(123, 85, 54, 0.14);
+      --title-font: "Bookman Old Style", Georgia, serif;
+      --theme-bg:
+        linear-gradient(180deg, rgba(228, 213, 182, 0.84), rgba(213, 193, 159, 0.44)),
+        repeating-linear-gradient(90deg, rgba(102, 74, 43, 0.06) 0 1px, transparent 1px 42px),
+        repeating-linear-gradient(0deg, rgba(102, 74, 43, 0.05) 0 1px, transparent 1px 42px);
+      --ornament: "✶";
+      --motif-a: "N";
+      --motif-b: "E";
+      --motif-c: "W";
+      --chip-bg: rgba(249, 242, 226, 0.88);
+      --chat-bg: rgba(248, 241, 228, 0.84);
+      --card-bg: rgba(255, 250, 242, 0.72);
+    }
+
+    .theme-ada {
+      --accent: #3d5c6d;
+      --accent-soft: rgba(61, 92, 109, 0.14);
+      --title-font: "Garamond", "Times New Roman", serif;
+      --theme-bg:
+        radial-gradient(circle at top right, rgba(129, 165, 178, 0.28), transparent 28%),
+        linear-gradient(180deg, rgba(226, 235, 237, 0.86), rgba(210, 220, 223, 0.44)),
+        repeating-linear-gradient(90deg, rgba(61, 92, 109, 0.05) 0 1px, transparent 1px 30px);
+      --ornament: "01";
+      --motif-a: "{";
+      --motif-b: "∴";
+      --motif-c: "}";
+      --chip-bg: rgba(238, 246, 248, 0.88);
+      --chat-bg: rgba(243, 248, 249, 0.86);
+      --card-bg: rgba(248, 253, 255, 0.72);
+    }
+
+    @media (max-width: 1080px) {
+      .wiki-page,
+      .deck,
+      .card-top,
+      .card-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .infobox {
+        position: static;
+      }
+
+      .navigator {
+        border-right: 0;
+        border-bottom: 1px solid rgba(41, 30, 17, 0.08);
+      }
+
+      .portrait-wrap {
+        min-height: 300px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .wiki-topbar {
+        padding: 12px 14px;
+      }
+
+      .wiki-page {
+        width: min(100%, calc(100% - 18px));
+        margin-top: 16px;
+        gap: 18px;
+      }
+
+      .article {
+        padding: 22px 18px 42px;
+      }
+
+      .assistant-bubble {
+        right: 14px;
+        top: auto;
+        bottom: 14px;
+      }
+
+      .assistant-panel {
+        padding: 10px;
+      }
+
+      .deck {
+        max-height: calc(100vh - 20px);
+        border-radius: 22px;
+      }
+
+      .card-stage,
+      .navigator {
+        padding: 16px;
+      }
+
+      .person-card {
+        padding: 18px;
+      }
+
+      .hero h3 {
+        max-width: none;
+      }
+
+      .composer-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype">
+    <div class="wiki-shell">
+      <div class="wiki-topbar">
+        <div class="wiki-wordmark"><span>Wiki</span>pedia</div>
+        <div class="wiki-actions">
+          <div>Read</div>
+          <div>View source</div>
+          <div>History</div>
+        </div>
+      </div>
+
+      <button class="assistant-bubble" type="button" id="assistantBubble" aria-expanded="false" aria-controls="assistantPanel">
+        <div class="assistant-badge">✦</div>
+        <div>
+          <strong>Ask history differently</strong>
+          <span>Open the personality card</span>
+        </div>
+      </button>
+
+      <div class="wiki-page">
+        <article class="article">
+          <h1>Cleopatra</h1>
+          <p class="dek">
+            Cleopatra VII Philopator was the last active ruler of the Ptolemaic Kingdom of Egypt.
+            This mock article area is here to simulate the extension in context: dense Wikipedia content,
+            long-form reading, and a small assistant entry point that opens a more playful but still serious
+            way to explore historical figures.
+          </p>
+          <div class="meta-row">
+            <div class="meta-pill">Prototype: floating bubble trigger</div>
+            <div class="meta-pill">Consistent card structure</div>
+            <div class="meta-pill">Adaptive visual identity</div>
+            <div class="meta-pill">Chat-first continuation</div>
+          </div>
+          <p>
+            The intent is not to replace the encyclopedia, but to create a faster entry into it.
+            A reader lands on a page, taps the assistant bubble, and sees a concise card with the
+            same logic every time: portrait, identity, tensions, legacy, and a direct bridge into
+            conversation. The visuals shift with the subject so the interface feels authored rather
+            than templated.
+          </p>
+          <p>
+            Cleopatra can evoke ceremonial gold, papyrus tones, and small hieroglyphic motifs without
+            sliding into parody. Christopher Columbus can feel cartographic and weathered, with a map-room
+            atmosphere. Ada Lovelace can move toward salon elegance and analytical notation. The structure
+            stays stable while the cultural and historical cues change.
+          </p>
+          <p>
+            This file is designed as a playground for direction rather than finished production UI.
+            It includes a simulated Wikipedia article, a floating extension trigger, a card selector,
+            and a small chat entry experience with suggested prompts and free input.
+          </p>
+          <p>
+            The next step after visual validation would be to move this into a real extension surface,
+            likely a content-script injected trigger plus an overlay or side panel that reads the
+            current Wikipedia article and hydrates the card with live data.
+          </p>
+        </article>
+
+        <aside class="infobox">
+          <h2>Infobox</h2>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Kleopatra-VII.-Altes-Museum-Berlin1.jpg"
+            alt="Bust commonly associated with Cleopatra"
+          />
+          <dl>
+            <dt>Reign</dt>
+            <dd>51-30 BCE</dd>
+            <dt>Dynasty</dt>
+            <dd>Ptolemaic</dd>
+            <dt>Languages</dt>
+            <dd>Greek, likely Egyptian among others</dd>
+            <dt>Known for</dt>
+            <dd>Statecraft, alliances, political survival</dd>
+          </dl>
+        </aside>
+      </div>
+    </div>
+
+    <div class="assistant-panel" id="assistantPanel" aria-hidden="true">
+      <div class="deck">
+        <aside class="navigator">
+          <h2>Personality Cards</h2>
+          <p>
+            Same editorial skeleton, adapted atmosphere. Pick a figure to see how the card flexes
+            across eras, myths, and political contexts.
+          </p>
+          <div class="legend">
+            <div class="dot"></div>
+            <span>Bubble trigger -> card -> starter themes -> real chat</span>
+          </div>
+          <div class="person-list" id="personList"></div>
+        </aside>
+
+        <section class="card-stage">
+          <button class="close-button" type="button" id="closePanel">Close</button>
+          <div class="person-card" id="personCard">
+            <div class="card-inner">
+              <div class="card-top">
+                <div class="portrait-wrap">
+                  <img id="portrait" alt="" />
+                  <div class="portrait-caption" id="portraitCaption"></div>
+                </div>
+
+                <div class="hero">
+                  <div class="eyebrow" id="eyebrow"></div>
+                  <h3 id="name"></h3>
+                  <div class="summary" id="summary"></div>
+                  <div class="facts" id="facts"></div>
+                </div>
+              </div>
+
+              <div class="card-grid">
+                <div class="sections">
+                  <section class="section-card">
+                    <h4>Quick Reading</h4>
+                    <p id="quickReading"></p>
+                  </section>
+
+                  <section class="section-card">
+                    <h4>Tensions To Keep In Mind</h4>
+                    <ul class="mini-list" id="tensions"></ul>
+                  </section>
+
+                  <section class="section-card">
+                    <h4>Why They Still Matter</h4>
+                    <ul class="mini-list" id="legacy"></ul>
+                  </section>
+                </div>
+
+                <aside class="chat-panel">
+                  <div class="header">
+                    <h4>Start A Real Chat</h4>
+                    <p id="chatIntro"></p>
+                  </div>
+                  <div class="themes" id="themes"></div>
+                  <div class="chat-log" id="chatLog"></div>
+                  <form class="composer" id="composer">
+                    <label for="promptInput">Ask your own question</label>
+                    <div class="composer-row">
+                      <input
+                        id="promptInput"
+                        name="prompt"
+                        type="text"
+                        placeholder="What part of this story should we unpack?"
+                        autocomplete="off"
+                      />
+                      <button type="submit">Start chat</button>
+                    </div>
+                  </form>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <script>
+    const personalities = [
+      {
+        id: "cleopatra",
+        className: "theme-cleopatra",
+        name: "Cleopatra",
+        eyebrow: "Queen, strategist, symbol",
+        subtitle: "Hellenistic Egypt, 1st century BCE",
+        portrait: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Kleopatra-VII.-Altes-Museum-Berlin1.jpg",
+        portraitCaption: "Use the historical image already available on the page or from Wikimedia, then wrap it in a tailored atmosphere instead of illustration-heavy chrome.",
+        summary: "A ruler constantly reduced to romance in popular culture, yet the more compelling frame is political: multilingual diplomacy, dynastic survival, Roman power struggles, and the final collapse of Ptolemaic Egypt.",
+        facts: [
+          ["Lived", "69-30 BCE"],
+          ["Role", "Pharaoh of Egypt"],
+          ["Core lens", "Power and survival"],
+          ["Read with", "Politics before myth"]
+        ],
+        quickReading: "Begin with the pressure around her, not the legend around her. Cleopatra inherited a brittle kingdom, navigated Roman intervention, and used image, language, and alliance as tools of state. The seduction narrative is famous because it is memorable; the governance narrative is richer because it explains her choices.",
+        tensions: [
+          ["Myth vs governance", "Later retellings glamorize her private life while flattening her statecraft."],
+          ["Egyptian ruler vs Greek dynasty", "She ruled Egypt but came from the Macedonian Greek Ptolemaic line."],
+          ["Icon vs person", "Her image shifts dramatically depending on whether the storyteller is Roman, modern, academic, or cinematic."]
+        ],
+        legacy: [
+          ["Political theater", "She remains a reference point for how performance and sovereignty can reinforce each other."],
+          ["Gendered memory", "Her reputation shows how ambitious women are often narrated through intimacy rather than policy."],
+          ["End of an era", "Her death marks a clean hinge between Hellenistic kingdoms and Roman imperial consolidation."]
+        ],
+        chatIntro: "Invite the reader into specifics: strategy, self-fashioning, Rome, or what later culture got wrong.",
+        themes: [
+          "How politically skilled was Cleopatra?",
+          "What did Roman sources distort about her?",
+          "Why is she remembered more as a lover than a ruler?",
+          "How did she use spectacle and image?"
+        ]
+      },
+      {
+        id: "columbus",
+        className: "theme-columbus",
+        name: "Christopher Columbus",
+        eyebrow: "Navigator, imperial agent, contested symbol",
+        subtitle: "Atlantic world, late 15th century",
+        portrait: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Christopher_Columbus.jpg",
+        portraitCaption: "The card can borrow cartographic cues and weathered materials while keeping the portrait itself photographic or archival rather than stylized.",
+        summary: "He is often introduced as an explorer, but that is only the first layer. The fuller card needs to hold navigation, empire, extraction, religious rhetoric, and the catastrophic consequences of contact together in the same frame.",
+        facts: [
+          ["Lived", "1451-1506"],
+          ["Role", "Navigator"],
+          ["Core lens", "Encounter and conquest"],
+          ["Read with", "Aftermath in view"]
+        ],
+        quickReading: "The useful shortcut is to avoid hero-story pacing. Columbus was part of expanding imperial systems, not a lone visionary sailing into empty space. Any serious summary should braid maritime ambition with colonization, coercion, and the reshaping of the Atlantic world.",
+        tensions: [
+          ["Discovery vs presence", "He did not 'discover' lands that were already inhabited by Indigenous peoples."],
+          ["Navigation vs violence", "Technical maritime achievement cannot be separated from colonial brutality."],
+          ["Memory vs commemoration", "Public monuments and schoolbook narratives often lag behind historical reassessment."]
+        ],
+        legacy: [
+          ["Global turning point", "His voyages became shorthand for the start of sustained transatlantic entanglement."],
+          ["Public controversy", "He is a flashpoint for debates about monuments, national myth, and historical accountability."],
+          ["Teaching challenge", "He forces educational materials to balance concise storytelling with moral and political complexity."]
+        ],
+        chatIntro: "This conversation works best when it is not binary. Let readers ask about navigation, conquest, Indigenous histories, or why his memory remains politically charged.",
+        themes: [
+          "Why is Columbus so controversial today?",
+          "What happened on his voyages beyond the myth?",
+          "How should we teach Columbus now?",
+          "What did Indigenous peoples experience first?"
+        ]
+      },
+      {
+        id: "ada",
+        className: "theme-ada",
+        name: "Ada Lovelace",
+        eyebrow: "Mathematician, writer, speculative thinker",
+        subtitle: "Britain, 19th century",
+        portrait: "https://upload.wikimedia.org/wikipedia/commons/a/a4/Ada_Lovelace_portrait.jpg",
+        portraitCaption: "A more analytical visual language can stay warm and human: salon portraiture, notation textures, blue-grey ink tones, and a less monumental rhythm.",
+        summary: "Ada Lovelace is often reduced to 'first programmer,' which is catchy but incomplete. What makes her enduring is the combination of technical interpretation and imaginative reach: she saw that a machine handling symbols might do more than arithmetic.",
+        facts: [
+          ["Lived", "1815-1852"],
+          ["Role", "Mathematical writer"],
+          ["Core lens", "Computation as idea"],
+          ["Read with", "Precision and imagination"]
+        ],
+        quickReading: "Her significance sits in the notes as much as the legend. Lovelace engaged with Babbage's Analytical Engine not merely as a calculator but as a general symbolic machine. Even where later narratives exaggerate, the conceptual leap she made still matters.",
+        tensions: [
+          ["First programmer?", "The title is useful but debated depending on how one defines programming."],
+          ["Collaboration vs attribution", "Her work is inseparable from Babbage's project, yet not reducible to it."],
+          ["Mythic origin story vs history", "Modern computing culture sometimes turns her into a simplified mascot."]
+        ],
+        legacy: [
+          ["Conceptual breadth", "She anticipated that computation could extend into music, pattern, and abstraction."],
+          ["Women in STEM memory", "Her afterlife became part of a broader effort to surface overlooked technical histories."],
+          ["Interpretive model", "She shows how commentary itself can be a form of innovation."]
+        ],
+        chatIntro: "A strong chat here can move between the machine, the notes, the myth, and how her reputation grew in modern computing culture.",
+        themes: [
+          "Was Ada Lovelace really the first programmer?",
+          "What exactly did she understand about the Analytical Engine?",
+          "How much of the legend is true?",
+          "Why does she matter to computing today?"
+        ]
+      }
+    ];
+
+    const personList = document.getElementById("personList");
+    const personCard = document.getElementById("personCard");
+    const portrait = document.getElementById("portrait");
+    const portraitCaption = document.getElementById("portraitCaption");
+    const eyebrow = document.getElementById("eyebrow");
+    const nameEl = document.getElementById("name");
+    const summary = document.getElementById("summary");
+    const facts = document.getElementById("facts");
+    const quickReading = document.getElementById("quickReading");
+    const tensions = document.getElementById("tensions");
+    const legacy = document.getElementById("legacy");
+    const chatIntro = document.getElementById("chatIntro");
+    const themes = document.getElementById("themes");
+    const chatLog = document.getElementById("chatLog");
+    const promptInput = document.getElementById("promptInput");
+    const composer = document.getElementById("composer");
+    const assistantBubble = document.getElementById("assistantBubble");
+    const assistantPanel = document.getElementById("assistantPanel");
+    const closePanel = document.getElementById("closePanel");
+
+    let activePerson = personalities[0];
+
+    const responses = {
+      cleopatra: "A good next step is to keep two layers visible at once: the Roman storytelling around Cleopatra and the strategic decisions she had to make as a ruler under immense pressure.",
+      columbus: "The most honest framing keeps maritime ambition and colonial violence in the same sentence. If we continue, we can focus on voyages, sources, Indigenous perspectives, or modern memory.",
+      ada: "The richest answer usually sits between celebration and correction. Ada Lovelace matters not because she solves every origin story, but because she expands what people thought computation could mean."
+    };
+
+    function renderList() {
+      personList.innerHTML = "";
+      personalities.forEach((person) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "person-option";
+        if (person.id === activePerson.id) button.classList.add("is-active");
+        button.innerHTML = `
+          <img src="${person.portrait}" alt="${person.name}" />
+          <div>
+            <strong>${person.name}</strong>
+            <span>${person.subtitle}</span>
+          </div>
+        `;
+        button.addEventListener("click", () => {
+          activePerson = person;
+          renderList();
+          renderCard();
+        });
+        personList.appendChild(button);
+      });
+    }
+
+    function appendMessage(text, role = "assistant") {
+      const item = document.createElement("div");
+      item.className = `message ${role}`;
+      item.textContent = text;
+      chatLog.appendChild(item);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    function resetChat(person) {
+      chatLog.innerHTML = "";
+      appendMessage(`Let's open ${person.name} through one sharp lens first. Pick a theme or type your own question.`, "assistant");
+    }
+
+    function renderCard() {
+      personCard.className = `person-card ${activePerson.className}`;
+      portrait.src = activePerson.portrait;
+      portrait.alt = activePerson.name;
+      portraitCaption.textContent = activePerson.portraitCaption;
+      eyebrow.textContent = activePerson.eyebrow;
+      nameEl.textContent = activePerson.name;
+      summary.textContent = activePerson.summary;
+      quickReading.textContent = activePerson.quickReading;
+      chatIntro.textContent = activePerson.chatIntro;
+
+      facts.innerHTML = "";
+      activePerson.facts.forEach(([label, value]) => {
+        const node = document.createElement("div");
+        node.className = "fact";
+        node.innerHTML = `<strong>${label}</strong><span>${value}</span>`;
+        facts.appendChild(node);
+      });
+
+      tensions.innerHTML = "";
+      activePerson.tensions.forEach(([label, value]) => {
+        const node = document.createElement("li");
+        node.innerHTML = `<strong>${label}</strong>${value}`;
+        tensions.appendChild(node);
+      });
+
+      legacy.innerHTML = "";
+      activePerson.legacy.forEach(([label, value]) => {
+        const node = document.createElement("li");
+        node.innerHTML = `<strong>${label}</strong>${value}`;
+        legacy.appendChild(node);
+      });
+
+      themes.innerHTML = "";
+      activePerson.themes.forEach((theme) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "theme-chip";
+        chip.textContent = theme;
+        chip.addEventListener("click", () => {
+          appendMessage(theme, "user");
+          appendMessage(responses[activePerson.id], "assistant");
+        });
+        themes.appendChild(chip);
+      });
+
+      resetChat(activePerson);
+      promptInput.placeholder = `Ask ${activePerson.name} about power, myth, legacy, or something more specific`;
+    }
+
+    function openPanel() {
+      assistantPanel.classList.add("is-open");
+      assistantPanel.setAttribute("aria-hidden", "false");
+      assistantBubble.setAttribute("aria-expanded", "true");
+    }
+
+    function closeCurrentPanel() {
+      assistantPanel.classList.remove("is-open");
+      assistantPanel.setAttribute("aria-hidden", "true");
+      assistantBubble.setAttribute("aria-expanded", "false");
+    }
+
+    composer.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const prompt = promptInput.value.trim();
+      if (!prompt) return;
+      appendMessage(prompt, "user");
+      appendMessage(`${responses[activePerson.id]} We can take "${prompt}" as the thread to deepen next.`, "assistant");
+      promptInput.value = "";
+    });
+
+    assistantBubble.addEventListener("click", openPanel);
+    closePanel.addEventListener("click", closeCurrentPanel);
+    assistantPanel.addEventListener("click", (event) => {
+      if (event.target === assistantPanel) closeCurrentPanel();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeCurrentPanel();
+    });
+
+    renderList();
+    renderCard();
+  </script>
+</body>
+</html>
